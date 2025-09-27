@@ -49,3 +49,39 @@ FOREIGN KEY (order_id) REFERENCES Orders(order_id),
 FOREIGN KEY (product_id) REFERENCES Products(product_id)
 );
 
+a) Total sales revenue
+SELECT SUM(p.price * oi.quantity) AS total_revenue
+FROM OrderItems oi
+JOIN Products p ON oi.product_id = p.product_id;
+
+b) Top 3 best-selling products
+SELECT p.product_name, SUM(oi.quantity) AS total_sold
+FROM OrderItems oi
+JOIN Products p ON oi.product_id = p.product_id
+GROUP BY p.product_name
+ORDER BY total_sold DESC
+LIMIT 3;
+
+c) Customer purchase history
+SELECT c.name, o.order_id, o.order_date, p.product_name, oi.quantity
+FROM Customers c
+JOIN Orders o ON c.customer_id = o.customer_id
+JOIN OrderItems oi ON o.order_id = oi.order_id
+JOIN Products p ON oi.product_id = p.product_id
+WHERE c.name = 'Alice Johnson';
+
+d) Sales by category
+SELECT cat.category_name, SUM(p.price * oi.quantity) AS revenue
+FROM OrderItems oi
+JOIN Products p ON oi.product_id = p.product_id
+JOIN Categories cat ON p.category_id = cat.category_id
+GROUP BY cat.category_name;
+
+e) Monthly sales trend
+SELECT DATE_FORMAT(order_date, '%Y-%m') AS month, 
+       SUM(p.price * oi.quantity) AS monthly_sales
+FROM Orders o
+JOIN OrderItems oi ON o.order_id = oi.order_id
+JOIN Products p ON oi.product_id = p.product_id
+GROUP BY month
+ORDER BY month;
